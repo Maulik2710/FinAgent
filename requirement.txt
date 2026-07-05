@@ -1,0 +1,50 @@
+# Data Collection
+yfinance
+pandas
+numpy
+requests
+newsapi-python
+pandas-datareader
+
+# Technical Indicators
+ta
+
+# Machine Learning
+scikit-learn
+joblib
+
+# Deep Learning
+tensorflow
+
+# RAG
+langchain
+langchain-community
+langchain-core
+langchain-huggingface
+sentence-transformers
+faiss-cpu
+ollama
+
+# Portfolio Optimization
+PyPortfolioOpt
+cvxpy
+
+# Backend
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+
+# Frontend
+streamlit
+plotly
+matplotlib
+
+# Utilities
+python-dotenv
+tqdm
+
+# Jupyter
+jupyter
+notebook
+ipykernel
