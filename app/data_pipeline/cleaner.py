@@ -26,7 +26,7 @@ def convert_datatypes(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def clean_dataframe(df: pd.DataFrame):
+def clean_stock_data(df: pd.DataFrame):
     df = sort_by_date(df)
     df = convert_datatypes(df)
     df = handle_missing_values(df)
