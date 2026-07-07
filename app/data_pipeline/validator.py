@@ -8,9 +8,13 @@ REQUIRED_COLUMNS = [
     "Volume"
 ]
 def check_empty(df: pd.DataFrame) -> bool:
+    if "Close" not in df.columns:
+        raise ValueError("Close column not found.")
     return df.empty
 
 def check_column(df: pd.DataFrame) -> bool:
+    if "Close" not in df.columns:
+        raise ValueError("Close column not found.")
     return all(column in df.columns for column in REQUIRED_COLUMNS)
 
 def validate_dataframe(df: pd.DataFrame):
