@@ -42,6 +42,6 @@ def build_lstm_model(input_shape: tuple) -> Sequential:
     model.add(Dense(1))
     
     # Compile
-    model.compile(optimizer = Adam(learning_rate = LEARNING_RATE),loss = "mean_squared_error")
+    model.compile(optimizer = Adam(learning_rate = LEARNING_RATE),loss = "mean_squared_error", metrics = ["mae"])
     
     return model

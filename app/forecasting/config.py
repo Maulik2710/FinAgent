@@ -1,15 +1,18 @@
-# dataset.py 
+# dataset
 SEQUENCE_LENGTH = 60
 TRAIN_SPLIT = 0.8
 FEATURE_COLUMNS = ["Close"]
 
-# model.py 
+# model
 LSTM_UNITS = 50
 DROPOUT_RATE = 0.2
 LEARNING_RATE = 0.001
 
-# trainer.py
+# training
 EPOCHS = 20
 BATCH_SIZE = 32
 VALIDATION_SPLIT = 0.2
 
+# Saving
+MODEL_NAME = "lstm.keras"
+SCALER_NAME = "scaler.pkl"
