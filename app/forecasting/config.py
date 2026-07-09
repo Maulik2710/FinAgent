@@ -1,0 +1,15 @@
+# dataset.py 
+SEQUENCE_LENGTH = 60
+TRAIN_SPLIT = 0.8
+FEATURE_COLUMNS = ["Close"]
+
+# model.py 
+LSTM_UNITS = 50
+DROPOUT_RATE = 0.2
+LEARNING_RATE = 0.001
+
+# trainer.py
+EPOCHS = 20
+BATCH_SIZE = 32
+VALIDATION_SPLIT = 0.2
+

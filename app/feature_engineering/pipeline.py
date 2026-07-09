@@ -30,7 +30,7 @@ def save_processed_data(df: pd.DataFrame,symbol:str) -> None:
     logger.info(f"{symbol} save to processed data.")
     
 
-def engineer_feature_pipeline() -> None:
+def engineer_features_pipeline() -> None:
     """ 
     Generate Technicle indicator for all the stocks.
     """

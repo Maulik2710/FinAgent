@@ -21,7 +21,7 @@ def add_sma(df: pd.DataFrame, window: int = 20) -> pd.DataFrame:
     df = df.copy()
     
     df[f"SMA_{window}"] = (
-        df["Close"].rolling(window).meand()
+        df["Close"].rolling(window).mean()
     )
     
     return df
