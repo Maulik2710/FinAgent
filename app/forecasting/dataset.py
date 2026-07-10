@@ -15,8 +15,6 @@ def load_processed_data(symbol:str) -> pd.DataFrame:
     """
     
     file_path = PROCESSED_DATA_DIR / f"{symbol}.csv"
-    print(file_path)
-    print(file_path.exists())
     
     logger.info(f"Loading processed data for {symbol}")
     
@@ -75,21 +73,17 @@ def split_train_test(X: np.ndarray, y: np.ndarray,train_split: float = TRAIN_SPL
     
     return X_train,X_test,y_train,y_test
 
-df = load_processed_data("AAPL")
 
-df = select_features(df)
+# Just for Training Purpose
 
-scaled_data, scaler = scale_features(df)
-
-X, y = create_sequences(scaled_data)
-
-print(X.shape)
-
-print(y.shape)
-X_train, X_test, y_train, y_test = split_train_test(X, y)
-
-print(X_train.shape)
-print(X_test.shape)
-
-print(y_train.shape)
-print(y_test.shape)
+# df = load_processed_data("AAPL")
+# df = select_features(df)
+# scaled_data, scaler = scale_features(df)
+# X, y = create_sequences(scaled_data)
+# print(X.shape)
+# print(y.shape)
+# X_train, X_test, y_train, y_test = split_train_test(X, y)
+# print(X_train.shape)
+# print(X_test.shape)
+# print(y_train.shape)
+# print(y_test.shape)

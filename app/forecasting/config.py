@@ -1,7 +1,17 @@
 # dataset
 SEQUENCE_LENGTH = 60
 TRAIN_SPLIT = 0.8
-FEATURE_COLUMNS = ["Close"]
+FEATURE_COLUMNS = [
+    "Close",
+    "Volume",
+    "Daily_Return",
+    "SMA_20",
+    "EMA_20",
+    "RSI_14",
+    "MACD",
+    "MACD_Signal",
+    "Rolling_Volatility"
+]
 
 # model
 LSTM_UNITS = 50

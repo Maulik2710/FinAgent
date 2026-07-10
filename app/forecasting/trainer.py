@@ -59,16 +59,13 @@ def train_model(symbol: str):
     model = build_lstm_model(input_shape=(X_train.shape[1],X_train.shape[2]))
     
     early_stopping = EarlyStopping(
-        filepath = MODEL_PATH,
         monitor="val_loss",
-        mode = "min",
         patience=5,
         restore_best_weights=True
     )
     
     checkpoint = ModelCheckpoint(
         filepath=MODEL_PATH,
-        mode = "min",
         monitor="val_loss",
         save_best_only=True
     )
@@ -101,7 +98,8 @@ def train_model(symbol: str):
     "y_test": y_test,
 }
 
-if __name__ == "__main__":
+# For Testing pupose Only
+# if __name__ == "__main__":
 
-    train_model("AAPL")
+#     train_model("AAPL")
 
