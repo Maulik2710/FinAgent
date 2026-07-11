@@ -41,7 +41,7 @@ def portfolio_optimization_pipeline() -> dict:
 
     return result
 
+# This is only for the testing purpose.
+# if __name__ == "__main__":
 
-if __name__ == "__main__":
-
-    portfolio_optimization_pipeline()
+#     portfolio_optimization_pipeline()

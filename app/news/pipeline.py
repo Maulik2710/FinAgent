@@ -45,8 +45,8 @@ def news_sentiment_pipeline(symbol: str, sentiment_pipeline=None,) -> dict:
     }
 
 # This is only for the Testing Purpose
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    results = news_sentiment_pipeline("AAPL")
+#     results = news_sentiment_pipeline("AAPL")
 
-    print("\nPipeline executed successfully.")
+#     print("\nPipeline executed successfully.")
