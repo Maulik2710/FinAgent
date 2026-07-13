@@ -85,13 +85,13 @@ def calculate_sentiment_score(news_df: pd.DataFrame,) -> float:
 
 
 # This is only for the Testing purpose
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     from app.news.downloader import download_news
+    from app.news.downloader import download_news
 
-#     sentiment_pipeline = load_sentiment_pipeline()
-#     news_df = download_news("AAPL")
-#     news_df = analyze_news_dataframe(news_df,sentiment_pipeline,)
-#     score = calculate_sentiment_score(news_df)
-#     print(news_df)
-#     print(f"\nOverall Sentiment Score: {score:.2f}")
+    sentiment_pipeline = load_sentiment_pipeline()
+    news_df = download_news("AAPL")
+    news_df = analyze_news_dataframe(news_df,sentiment_pipeline,)
+    score = calculate_sentiment_score(news_df)
+    print(news_df)
+    print(f"\nOverall Sentiment Score: {score:.2f}")

@@ -1,16 +1,33 @@
 from app.data_pipeline.logger import logger
 
+from app.forecasting.pipeline import forecast_pipeline
+from app.news.pipeline import news_sentiment_pipeline
+from app.portfolio.pipeline import portfolio_optimization_pipeline
+
 from app.recommendation.engine import generate_recommendation
 
 
-def recommendation_pipeline(current_price: float, predicted_price: float, sentiment_score: float, portfolio_weight: float,):
+def recommendation_pipeline(symbol: str):
     """
-    Run the complete recommendation pipeline.
+    Complete recommendation pipeline.
     """
 
-    logger.info("Generating investment recommendation...")
+    logger.info(f"Generating recommendation for {symbol}...")
 
-    # Calculate predicted return
+    # Forecast
+    forecast = forecast_pipeline(symbol)
+
+    current_price = forecast["current_price"]
+    predicted_price = forecast["predicted_price"]
+
+    # News
+    news = news_sentiment_pipeline(symbol)
+    sentiment_score = news["sentiment_score"]
+
+    # Portfolio
+    portfolio = portfolio_optimization_pipeline(symbol)
+    portfolio_weight = portfolio["weight"]
+
     predicted_return = (predicted_price - current_price) / current_price
 
     result = generate_recommendation(
@@ -19,30 +36,21 @@ def recommendation_pipeline(current_price: float, predicted_price: float, sentim
         portfolio_weight=portfolio_weight,
     )
 
-    logger.info("Recommendation generated successfully.")
-
     return result
 
 
 # This is Only for the Testing Purpose
 if __name__ == "__main__":
 
-    current_price = 220.0
-    predicted_price = 245.0
-    sentiment_score = 0.60
-    portfolio_weight = 0.18
-    recommendation = recommendation_pipeline(
-        current_price=current_price,
-        predicted_price=predicted_price,
-        sentiment_score=sentiment_score,
-        portfolio_weight=portfolio_weight,
-    )
+    recommendation = recommendation_pipeline("AAPL")
+
     print()
     print("Recommendation")
     print("-" * 40)
     print(f"Action       : {recommendation['recommendation']}")
-    print(f"Confidence   : {recommendation['confidence']}%")
-    print(f"Score        : {recommendation['score']}")
+    print(f"Confidence   : {recommendation['confidence']:.2f}%")
+    print(f"Score        : {recommendation['score']:.2f}")
+
     print("\nReasons")
     for reason in recommendation["reasons"]:
         print(f"- {reason}")

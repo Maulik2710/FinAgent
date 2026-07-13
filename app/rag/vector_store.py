@@ -81,9 +81,9 @@ def load_vector_store():
 
 
 # This is Only for the Testing Purpose
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     vector_store = create_vector_store()
-#     save_vector_store(vector_store)
-#     vector_store = load_vector_store()
-#     print(vector_store.index.ntotal)
+    vector_store = create_vector_store()
+    save_vector_store(vector_store)
+    vector_store = load_vector_store()
+    print(vector_store.index.ntotal)

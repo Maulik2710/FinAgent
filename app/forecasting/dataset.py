@@ -27,16 +27,32 @@ def select_features(df: pd.DataFrame) ->pd.DataFrame:
     
     return df[FEATURE_COLUMNS]
 
-def scale_features(df : pd.DataFrame):
-    """ 
-    Scaled feature with MinMaxScaler
+def scale_features(df, scaler=None):
     """
-    
-    scaler = MinMaxScaler()
-    scaled_data = scaler.fit_transform(df)
-    
-    # Later if you want to compute the stock prise from the scaled data then we need scaler so we also return scaler with scaled_data.
-    return scaled_data,scaler 
+    Scale features using MinMaxScaler.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Feature dataframe.
+
+    scaler : MinMaxScaler | None
+        If None, fit a new scaler.
+        Otherwise use the provided fitted scaler.
+
+    Returns
+    -------
+    scaled_data
+    scaler
+    """
+
+    if scaler is None:
+        scaler = MinMaxScaler()
+        scaled_data = scaler.fit_transform(df)
+    else:
+        scaled_data = scaler.transform(df)
+
+    return scaled_data, scaler
 
 
 def create_sequences(scaled_data: np.ndarray,sequence_length: int = SEQUENCE_LENGTH):
@@ -76,14 +92,14 @@ def split_train_test(X: np.ndarray, y: np.ndarray,train_split: float = TRAIN_SPL
 
 # Just for Training Purpose
 
-# df = load_processed_data("AAPL")
-# df = select_features(df)
-# scaled_data, scaler = scale_features(df)
-# X, y = create_sequences(scaled_data)
-# print(X.shape)
-# print(y.shape)
-# X_train, X_test, y_train, y_test = split_train_test(X, y)
-# print(X_train.shape)
-# print(X_test.shape)
-# print(y_train.shape)
-# print(y_test.shape)
+df = load_processed_data("AAPL")
+df = select_features(df)
+scaled_data, scaler = scale_features(df)
+X, y = create_sequences(scaled_data)
+print(X.shape)
+print(y.shape)
+X_train, X_test, y_train, y_test = split_train_test(X, y)
+print(X_train.shape)
+print(X_test.shape)
+print(y_train.shape)
+print(y_test.shape)

@@ -118,4 +118,5 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     df = add_macd(df)
     df = add_rolling_volatility(df)
 
+    df = df.dropna().reset_index(drop=True)
     return df

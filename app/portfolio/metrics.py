@@ -44,15 +44,15 @@ def calculate_covariance_matrix(daily_returns: pd.DataFrame) -> pd.DataFrame:
 
 
 # Only Testing Purpose 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     from app.data_pipeline.config import STOCKS
+    from app.data_pipeline.config import STOCKS
 
-#     prices = load_close_prices(STOCKS)
-#     returns = calculate_daily_returns(prices)
-#     annual_returns = calculate_annual_returns(returns)
-#     covariance = calculate_covariance_matrix(returns)
-#     print(prices.head())
-#     print(returns.head())
-#     print(annual_returns)
-#     print(covariance)
+    prices = load_close_prices(STOCKS)
+    returns = calculate_daily_returns(prices)
+    annual_returns = calculate_annual_returns(returns)
+    covariance = calculate_covariance_matrix(returns)
+    print(prices.head())
+    print(returns.head())
+    print(annual_returns)
+    print(covariance)

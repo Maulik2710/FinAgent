@@ -1,9 +1,0 @@
-Recommended Portfolio Allocation
-
-AAPL : 14%
-NVDA : 48%
-TSLA : 13%
-AMD : 8%
-JPM : 14%
-
-The portfolio is optimized using the Sharpe Ratio.

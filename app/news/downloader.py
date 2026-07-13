@@ -66,8 +66,8 @@ def download_news(symbol: str) -> pd.DataFrame:
     return news_df
 
 # This is only for the training purpose
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     df = download_news("AAPL")
+    df = download_news("AAPL")
 
-#     print(df.head())
+    print(df.head())

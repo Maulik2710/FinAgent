@@ -71,3 +71,8 @@ def download_all_stocks() -> None:
         except ValueError as e:
             logger.error(f"{symbol}: {e}")
             continue
+        
+if __name__ == "__main__":
+    logger.info("Starting stock data download...")
+    download_all_stocks()
+    logger.info("All downloads completed.")

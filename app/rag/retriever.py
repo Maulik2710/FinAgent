@@ -34,18 +34,18 @@ def retrieve_documents(query: str):
     return documents
 
 # This is Only for the Testing purpose 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     query = "Should I buy Apple stock?"
+    query = "Should I buy Apple stock?"
 
-#     documents = retrieve_documents(query)
+    documents = retrieve_documents(query)
 
-#     print()
+    print()
 
-#     for i, doc in enumerate(documents, start=1):
+    for i, doc in enumerate(documents, start=1):
 
-#         print(f"Document {i}")
-#         print("-" * 40)
-#         print(doc.page_content)
-#         print(doc.metadata)
-#         print()
+        print(f"Document {i}")
+        print("-" * 40)
+        print(doc.page_content)
+        print(doc.metadata)
+        print()

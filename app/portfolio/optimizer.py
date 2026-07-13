@@ -105,11 +105,11 @@ def display_allocation(result: dict) -> None:
 
 
 # This is Only for the training Purpose
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     prices = load_close_prices(STOCKS)
-#     daily_returns = calculate_daily_returns(prices)
-#     annual_returns = calculate_annual_returns(daily_returns)
-#     covariance_matrix = calculate_covariance_matrix(daily_returns)
-#     result = optimize_portfolio(annual_returns.values,covariance_matrix.values,)
-#     display_allocation(result)
+    prices = load_close_prices(STOCKS)
+    daily_returns = calculate_daily_returns(prices)
+    annual_returns = calculate_annual_returns(daily_returns)
+    covariance_matrix = calculate_covariance_matrix(daily_returns)
+    result = optimize_portfolio(annual_returns.values,covariance_matrix.values,)
+    display_allocation(result)

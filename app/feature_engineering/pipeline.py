@@ -36,14 +36,33 @@ def engineer_features_pipeline() -> None:
     """
     
     for symbol in STOCKS:
-        
+
         logger.info(f"Engineering features for {symbol}...")
+
         try:
             df = load_stock_data(symbol)
+
+            print("\nRaw Shape:", df.shape)
+            print("Raw NaNs:")
+            print(df.isnull().sum())
+
             df = engineer_features(df)
-            save_processed_data(df,symbol)
+
+            print("\nAfter engineer_features()")
+            print(df.shape)
+            print(df.isnull().sum())
+
+            save_processed_data(df, symbol)
+
             logger.info(f"{symbol} completed successfully.")
+
         except Exception as e:
             logger.exception(f"Failed to engineer features for {symbol}: {e}")
-        
-    
+
+if __name__ == "__main__":
+
+    logger.info("Starting feature engineering pipeline...")
+
+    engineer_features_pipeline()
+
+    logger.info("Feature engineering completed successfully.")

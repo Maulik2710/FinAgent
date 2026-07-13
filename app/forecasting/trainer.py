@@ -5,6 +5,7 @@ from tensorflow.keras.callbacks import (
 from pathlib import Path
 
 from app.data_pipeline.logger import logger
+from app.data_pipeline.config import STOCKS
 
 from app.forecasting.dataset import(
     load_processed_data,
@@ -23,6 +24,7 @@ from app.forecasting.config import(
 )
 
 import pickle
+import numpy as np
 
 
 MODEL_DIR = Path("models")
@@ -50,9 +52,36 @@ def train_model(symbol: str):
     
     df = select_features(df)
     
+    print("=" * 50)
+    print(df.isnull().sum())
+    print("=" * 50)
+
+    print("Any NaN:", df.isnull().values.any())
+    print("Any Inf:", np.isinf(df.select_dtypes(include=[float, int])).values.any())
+        
     scaled_data,scaler = scale_features(df)
-    
+        
+    print("=" * 50)
+    print("Scaled Data Debug")
+    print("=" * 50)
+
+    print("Shape:", scaled_data.shape)
+    print("NaN Count:", np.isnan(scaled_data).sum())
+    print("Inf Count:", np.isinf(scaled_data).sum())
+    print("Min:", np.nanmin(scaled_data))
+    print("Max:", np.nanmax(scaled_data))
+        
     X,y = create_sequences(scaled_data)
+    
+    print("=" * 50)
+    print("Sequence Debug")
+    print("=" * 50)
+
+    print("X NaN:", np.isnan(X).sum())
+    print("y NaN:", np.isnan(y).sum())
+
+    print("X Inf:", np.isinf(X).sum())
+    print("y Inf:", np.isinf(y).sum())
     
     X_train, X_test, y_train, y_test = split_train_test(X,y)
     
@@ -99,7 +128,9 @@ def train_model(symbol: str):
 }
 
 # For Testing pupose Only
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
-#     train_model("AAPL")
+    for symbol in STOCKS:
+        print(f"\nTraining {symbol}...")
+        train_model(symbol)
 
