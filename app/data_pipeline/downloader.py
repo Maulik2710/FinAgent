@@ -26,7 +26,7 @@ def download_stock(symbol: str) -> pd.DataFrame:
     Download historical stock data for a single stock.
     """
     logger.info(f"Downloading {symbol}...")
-
+       
     try:
 
         df = yf.download(

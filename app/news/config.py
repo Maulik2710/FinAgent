@@ -31,3 +31,12 @@ COMPANY_NAMES = {
     "NFLX": "Netflix",
     "JPM": "JPMorgan",
 }
+
+# Save the news
+DATA_DIR = Path("data")
+
+RAW_NEWS_DIR = NEWS_DIR / "raw"
+SENTIMENT_NEWS_DIR = NEWS_DIR / "sentiment"
+
+RAW_NEWS_DIR.mkdir(parents=True, exist_ok=True)
+SENTIMENT_NEWS_DIR.mkdir(parents=True, exist_ok=True)

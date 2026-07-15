@@ -1,4 +1,4 @@
-from langchain_community.document_loaders import DirectoryLoader, TextLoader
+from langchain_community.document_loaders import DirectoryLoader, CSVLoader , TextLoader
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -8,6 +8,7 @@ from app.rag.config import (
     KNOWLEDGE_DIR,
     CHUNK_SIZE,
     CHUNK_OVERLAP,
+    NEWS_DIR,
 )
 
 def load_documents():
@@ -17,13 +18,23 @@ def load_documents():
 
     logger.info("Loading knowledge documents...")
 
-    loader = DirectoryLoader(
+    loader1 = DirectoryLoader(
         path=str(KNOWLEDGE_DIR),
         glob="*.txt",
         loader_cls=TextLoader,
     )
+    
+    loader2 = DirectoryLoader(
+        path=str(NEWS_DIR),
+        glob="*.csv",
+        loader_cls=CSVLoader,
+    )
 
-    documents = loader.load()
+    documents1 = loader1.load()
+    
+    documents2 = loader2.load()
+    
+    documents = documents1 + documents2
 
     logger.info(f"{len(documents)} documents loaded.")
 

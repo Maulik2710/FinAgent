@@ -13,7 +13,7 @@ from app.portfolio.optimizer import (
 )
 
 
-def portfolio_optimization_pipeline() -> dict:
+def portfolio_optimization_pipeline(symbol : str) -> dict:
     """
     Run the complete portfolio optimization pipeline.
     """
@@ -21,7 +21,7 @@ def portfolio_optimization_pipeline() -> dict:
     logger.info("Starting portfolio optimization...")
 
     logger.info("Loading stock prices...")
-    prices = load_close_prices(STOCKS)
+    prices = load_close_prices([symbol])
 
     logger.info("Calculating daily returns...")
     daily_returns = calculate_daily_returns(prices)

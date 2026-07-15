@@ -22,11 +22,11 @@ def recommendation_pipeline(symbol: str):
 
     # News
     news = news_sentiment_pipeline(symbol)
-    sentiment_score = news["sentiment_score"]
+    sentiment_score = news["score"]
 
     # Portfolio
     portfolio = portfolio_optimization_pipeline(symbol)
-    portfolio_weight = portfolio["weight"]
+    portfolio_weight = portfolio["weights"]
 
     predicted_return = (predicted_price - current_price) / current_price
 

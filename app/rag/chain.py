@@ -62,6 +62,7 @@ def ask_question(question: str):
 
     logger.info("Retrieving documents...")
     docs = retrieve_documents(question)
+    print(docs)
     context = "\n\n".join(
         f"Source: {doc.metadata['source']}\n{doc.page_content}"
         for doc in docs

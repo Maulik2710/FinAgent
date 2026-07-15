@@ -31,5 +31,8 @@ TOP_K = 4
 KNOWLEDGE_DIR = Path("data/knowledge")
 KNOWLEDGE_DIR.mkdir(parents=True, exist_ok=True)
 
+NEWS_DIR = Path("data/news/sentiment")
+NEWS_DIR.mkdir(parents=True, exist_ok=True)
+
 VECTOR_DB_DIR = Path("data/vector_store")
 VECTOR_DB_DIR.mkdir(parents=True, exist_ok=True)

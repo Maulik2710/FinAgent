@@ -6,7 +6,7 @@ from app.news.sentiment import (
     analyze_news_dataframe,
     calculate_sentiment_score,
 )
-
+from app.news.storage import save_raw_news, save_sentiment_news
 
 def news_sentiment_pipeline(symbol: str, sentiment_pipeline=None,) -> dict:
     """
@@ -21,9 +21,15 @@ def news_sentiment_pipeline(symbol: str, sentiment_pipeline=None,) -> dict:
 
     # Download latest news
     news_df = download_news(symbol)
+    
+    # Save the Downloaded news
+    save_raw_news(news_df, symbol)
 
     # Analyze sentiment
     news_df = analyze_news_dataframe(news_df, sentiment_pipeline,)
+    
+    # Save the Downloaded news with sentiment
+    save_sentiment_news(news_df, symbol)
 
     # Calculate overall sentiment score
     sentiment_score = calculate_sentiment_score(news_df)
