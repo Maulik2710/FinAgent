@@ -113,6 +113,14 @@ if __name__ == "__main__":
     annual_returns = calculate_annual_returns(daily_returns)
     covariance_matrix = calculate_covariance_matrix(daily_returns)
     result = optimize_portfolio(annual_returns.values,covariance_matrix.values,)
-    # print(len(result['weights']))
-    # print(len(result['symbols']))
-    display_allocation(result)
+    symbols = result['symbols']
+    weights = result['weights']
+    print("Symbols:")
+    print(symbols)
+    print(symbols.shape)
+
+    print("\nWeights:")
+    print(weights)
+    print(weights.shape)
+
+    display_allocation(result)                                                                                          

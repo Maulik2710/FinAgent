@@ -11,6 +11,7 @@ from app.frontend.component.forecast import show_forecast
 from app.frontend.component.recommendation import show_recommendation
 from app.frontend.component.news import show_news
 from app.frontend.component.portfolio import show_portfolio
+from app.frontend.component.chatbot import show_chatbot
 
 # Page Configuration
 st.set_page_config(
@@ -76,7 +77,7 @@ with forecast_tab:
 
 # Portfolio
 with portfolio_tab:
-    show_portfolio(selected_stock)
+    show_portfolio()
 
 # News
 with news_tab:
@@ -88,6 +89,4 @@ with recommendation_tab:
 
 # AI Chat
 with chatbot_tab:
-
-    st.header("AI Financial Assistant")
-    st.info("Chat with FinAgent using RAG + Gemini.")
+    show_chatbot()

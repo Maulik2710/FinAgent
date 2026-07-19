@@ -25,8 +25,13 @@ def recommendation_pipeline(symbol: str):
     sentiment_score = news["score"]
 
     # Portfolio
-    portfolio = portfolio_optimization_pipeline(symbol)
-    portfolio_weight = portfolio["weights"]
+    portfolio = portfolio_optimization_pipeline()
+    symbol_index = 0
+    for symbol_idx,symbols in enumerate(portfolio["symbols"]):
+        if symbols == symbol:
+            symbol_index = symbol_idx
+            break
+    portfolio_weight = portfolio["weights"][symbol_index]
 
     predicted_return = (predicted_price - current_price) / current_price
 

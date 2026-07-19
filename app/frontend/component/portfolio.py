@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 from app.portfolio.pipeline import portfolio_optimization_pipeline
 
 
-def show_portfolio(symbol: str):
+def show_portfolio():
 
     st.header("💼 Portfolio Optimization")
 
-    result = portfolio_optimization_pipeline(symbol)
+    result = portfolio_optimization_pipeline()
 
     symbols = result["symbols"]
     weights = result["weights"]
@@ -30,17 +30,15 @@ def show_portfolio(symbol: str):
 
     st.markdown("---")
     
-    portfolio_df = pd.DataFrame(
-        {
-            "Stock": symbols,
-            "Allocation (%)": weights*100,
-        }
-    )
+    portfolio_df = pd.DataFrame({
+        "Stock": symbols,
+        "Allocation": weights * 100,
+    })
     
-    portfolio_df = portfolio_df.sort_values("Allocation (%)",ascending=False,)
+    portfolio_df = portfolio_df.sort_values("Allocation",ascending=False,)
     
     # remove allocations below 1%:
-    portfolio_df = portfolio_df[portfolio_df["Allocation (%)"] > 1]
+    portfolio_df = portfolio_df[portfolio_df["Allocation"] > 1]
 
     st.subheader("Portfolio Allocation")
 
@@ -53,8 +51,8 @@ def show_portfolio(symbol: str):
     fig, ax = plt.subplots(figsize=(6,6))
 
     ax.pie(
-        weights.values(),
-        labels=weights.keys(),
+        portfolio_df["Allocation"],
+        labels=portfolio_df["Stock"],
         autopct="%1.1f%%",
         startangle=90,
     )
