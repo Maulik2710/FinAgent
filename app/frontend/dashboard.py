@@ -9,6 +9,8 @@ if str(PROJECT_ROOT) not in sys.path:
 import streamlit as st
 from app.frontend.component.forecast import show_forecast
 from app.frontend.component.recommendation import show_recommendation
+from app.frontend.component.news import show_news
+from app.frontend.component.portfolio import show_portfolio
 
 # Page Configuration
 st.set_page_config(
@@ -38,14 +40,11 @@ selected_stock = st.sidebar.selectbox(
         "JPM",
     ],
 )
-show_forecast(selected_stock)
+refresh = st.sidebar.button("🔄 Refresh")
 
 st.divider()
 
-show_recommendation(selected_stock)
-
 st.sidebar.markdown("---")
-
 st.sidebar.info(
     f"Currently Selected:\n\n**{selected_stock}**"
 )
@@ -77,21 +76,15 @@ with forecast_tab:
 
 # Portfolio
 with portfolio_tab:
-
-    st.header("Portfolio Optimization")
-    st.info("Portfolio optimization results will appear here.")
+    show_portfolio(selected_stock)
 
 # News
 with news_tab:
-
-    st.header("News Sentiment")
-    st.info("News sentiment analysis will appear here.")
+    show_news(selected_stock)
 
 # Recommendation
 with recommendation_tab:
-
-    st.header("Recommendation")
-    st.info("Recommendation engine output will appear here.")
+    show_recommendation(selected_stock)
 
 # AI Chat
 with chatbot_tab:

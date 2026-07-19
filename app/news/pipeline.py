@@ -36,17 +36,17 @@ def news_sentiment_pipeline(symbol: str, sentiment_pipeline=None,) -> dict:
 
     logger.info(f"Overall sentiment score for {symbol}: {sentiment_score:.2f}")
 
-    print("\nNews Sentiment Results\n")
-    print(news_df)
+    # print("\nNews Sentiment Results\n")
+    # print(news_df)
 
-    print("\nOverall Sentiment Score")
-    print("-----------------------")
-    print(f"{sentiment_score:.2f}")
+    # print("\nOverall Sentiment Score")
+    # print("-----------------------")
+    # print(f"{sentiment_score:.2f}")
 
     logger.info(f"News sentiment analysis completed for {symbol}.")
 
     return {
-        "news": news_df,
+        "news": news_df.to_dict("records"),
         "score": sentiment_score,
     }
 
