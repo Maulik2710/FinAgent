@@ -33,7 +33,7 @@ COMPANY_NAMES = {
 }
 
 # Save the news
-DATA_DIR = Path("data")
+DATA_DIR = Path("FinAgent/data")
 
 RAW_NEWS_DIR = NEWS_DIR / "raw"
 SENTIMENT_NEWS_DIR = NEWS_DIR / "sentiment"

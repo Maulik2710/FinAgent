@@ -42,7 +42,7 @@ def calculate_covariance_matrix(daily_returns: pd.DataFrame) -> pd.DataFrame:
 
     return daily_returns.cov() * TRADING_DAYS
 
-
+ 
 # Only Testing Purpose 
 if __name__ == "__main__":
 

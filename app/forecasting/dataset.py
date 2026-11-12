@@ -91,15 +91,15 @@ def split_train_test(X: np.ndarray, y: np.ndarray,train_split: float = TRAIN_SPL
 
 
 # Just for Training Purpose
-
-df = load_processed_data("AAPL")
-df = select_features(df)
-scaled_data, scaler = scale_features(df)
-X, y = create_sequences(scaled_data)
-print(X.shape)
-print(y.shape)
-X_train, X_test, y_train, y_test = split_train_test(X, y)
-print(X_train.shape)
-print(X_test.shape)
-print(y_train.shape)
-print(y_test.shape)
+if __name__ == "__main__":
+    df = load_processed_data("AAPL")
+    df = select_features(df)
+    scaled_data, scaler = scale_features(df)
+    X, y = create_sequences(scaled_data)
+    print(X.shape)
+    print(y.shape)
+    X_train, X_test, y_train, y_test = split_train_test(X, y)
+    print(X_train.shape)
+    print(X_test.shape)
+    print(y_train.shape)
+    print(y_test.shape)
