@@ -3,7 +3,7 @@ services:
     name: finagent-ai
     runtime: docker
     dockerfilePath: ./Dockerfile
-    plan: starter        # LSTM/TensorFlow needs more than the 512 MB free tier
+    plan: 1c-2g          # = "Standard" (2 GB RAM). Needed for TensorFlow. If Render rejects this ID, use: standard
     healthCheckPath: /api/stocks
     envVars:
       - key: GEMINI_API_KEY
