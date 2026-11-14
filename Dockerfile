@@ -4,21 +4,26 @@ WORKDIR /build
 COPY frontend/package*.json ./
 RUN npm ci
 COPY frontend/ ./
-# VITE_API_URL is unset, so the app calls /api on the same origin
 RUN npm run build
 
 # ---------- Stage 2: Python API + built frontend ----------
 FROM python:3.12-slim
-WORKDIR /app
-ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 PORT=8000
 
-COPY requirements-prod.txt .
+# Hugging Face Spaces runs containers as user 1000
+RUN useradd -m -u 1000 user
+ENV HOME=/home/user PATH=/home/user/.local/bin:$PATH \
+    PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 \
+    TF_CPP_MIN_LOG_LEVEL=2 PORT=7860
+WORKDIR /home/user/app
+
+COPY --chown=user requirements-prod.txt .
+USER user
 RUN pip install --no-cache-dir -r requirements-prod.txt
 
-COPY app ./app
-COPY data ./data
-COPY models ./models
-COPY --from=frontend-build /build/dist ./frontend/dist
+COPY --chown=user app ./app
+COPY --chown=user data ./data
+COPY --chown=user models ./models
+COPY --chown=user --from=frontend-build /build/dist ./frontend/dist
 
-EXPOSE 8000
-CMD ["sh", "-c", "uvicorn app.api.server:app --host 0.0.0.0 --port ${PORT:-8000}"]
+EXPOSE 7860
+CMD ["sh", "-c", "uvicorn app.api.server:app --host 0.0.0.0 --port ${PORT:-7860}"]

@@ -1,79 +1,74 @@
+import numpy as np
+
 from app.data_pipeline.logger import logger
 
-from app.forecasting.dataset import (
-    load_processed_data,
-    select_features,
-    scale_features,
-    create_sequences,
-    split_train_test,
-)
-
+from app.forecasting.dataset import prepare_data
 from app.forecasting.predictor import (
     load_trained_model,
     load_saved_scaler,
-    predict_prices,
-    inverse_transform_predictions,
-    inverse_transform_targets,
+    predict_returns,
 )
 
 
 def forecast_pipeline(symbol: str):
     """
-    Complete forecasting pipeline.
-    """
+    Complete forecasting pipeline for one symbol.
 
+    Returns
+    -------
+    dict with:
+      current_price   : latest real close
+      predicted_price : REAL next-day forecast (from the latest 60 days)
+      actual_prices   : test-period real prices (backtest)
+      predictions     : test-period predicted prices (backtest)
+      prev_close      : previous-day close for each backtest point
+    """
     logger.info(f"Running forecasting pipeline for {symbol}...")
 
-    # Load model & scaler
-    model = load_trained_model()
-    scaler = load_saved_scaler()
+    model = load_trained_model(symbol)
+    scaler = load_saved_scaler(symbol)
 
-    # Load processed data
-    df = load_processed_data(symbol)
+    data = prepare_data(symbol, scaler=scaler)
 
-    df = select_features(df)
+    # Backtest: predicted price = previous real close * exp(predicted return)
+    pred_returns = predict_returns(model, data["X_test"])
+    predictions = data["prev_close_test"] * np.exp(pred_returns)
+    actual_prices = data["actual_test"]
 
-    # Scale using SAVED scaler
-    scaled_data, _ = scale_features(df, scaler=scaler,)
-
-    # Create sequences
-    X, y = create_sequences(scaled_data)
-    
-    _, X_test, _, y_test = split_train_test(X, y)
-
-    # Predict
-    predictions = predict_prices(model, X_test)
-
-    # Back to original prices
-    predictions = inverse_transform_predictions(scaler, predictions,)
-
-    actual_prices = inverse_transform_targets(scaler, y_test)
-
-    current_price = float(actual_prices[-1][0])
-
-    predicted_price = float(predictions[-1][0])
+    # Real next-day forecast
+    next_return = predict_returns(model, data["last_window"][None, ...])[0]
+    current_price = data["last_close"]
+    predicted_price = float(current_price * np.exp(next_return))
 
     logger.info(
-    f"Forecast completed for {symbol}. "
-    f"Current: ${current_price:.2f}, "
-    f"Predicted: ${predicted_price:.2f}"
-)
+        f"Forecast completed for {symbol}. "
+        f"Current: ${current_price:.2f}, "
+        f"Next-day predicted: ${predicted_price:.2f}"
+    )
 
     return {
         "current_price": current_price,
         "predicted_price": predicted_price,
-        "actual_prices": actual_prices.flatten(),
-        "predictions": predictions.flatten(),
+        "actual_prices": actual_prices,
+        "predictions": predictions,
+        "prev_close": data["prev_close_test"],
     }
 
 
-#This is Only for the testing purpose
-
+# Testing only
 if __name__ == "__main__":
+    from app.forecasting.evaluator import evaluate_model
 
-    result = forecast_pipeline("AAPL")
-    print()
-    print("Forecast Results")
+    symbol = "NVDA"
+    result = forecast_pipeline(symbol)
+
+    print("\nForecast Results")
     print("-----------------------------")
-    print(f"Current Price   : ${result['current_price']:.2f}")
-    print(f"Predicted Price : ${result['predicted_price']:.2f}")
+    print(f"Current Price        : ${result['current_price']:.2f}")
+    print(f"Next-day Prediction  : ${result['predicted_price']:.2f}\n")
+
+    evaluate_model(
+        result["actual_prices"],
+        result["predictions"],
+        result["prev_close"],
+    )

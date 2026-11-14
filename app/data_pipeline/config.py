@@ -37,10 +37,23 @@ STOCKS = [
 # Download Settings
 # ----------------------------
 
-START_DATE = "2019-01-01"
+# More history = more training samples for the LSTM.
+# (2019 gave only ~1,900 rows; 2010 gives ~4,200 for most of these stocks.)
+START_DATE = "2010-01-01"
 
 END_DATE = None
 
 INTERVAL = "1d"
 
 AUTO_ADJUST = True
+
+# Retry a failed download this many times before giving up on a symbol
+DOWNLOAD_RETRIES = 3
+RETRY_DELAY_SECONDS = 3
+
+# ----------------------------
+# Validation Settings
+# ----------------------------
+
+# Minimum rows needed so that the LSTM can build sequences and a test set
+MIN_ROWS = 300

@@ -1,136 +1,80 @@
-from tensorflow.keras.callbacks import (
-    EarlyStopping,
-    ModelCheckpoint
-)
-from pathlib import Path
+import pickle
+import random
+
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 from app.data_pipeline.logger import logger
 from app.data_pipeline.config import STOCKS
 
-from app.forecasting.dataset import(
-    load_processed_data,
-    select_features,
-    scale_features,
-    create_sequences,
-    split_train_test
-)
+from app.forecasting.dataset import prepare_data
 from app.forecasting.model import build_lstm_model
-from app.forecasting.config import(
+from app.forecasting.config import (
     EPOCHS,
     BATCH_SIZE,
     VALIDATION_SPLIT,
-    MODEL_NAME,
-    SCALER_NAME,
+    EARLY_STOP_PATIENCE,
+    RANDOM_SEED,
+    get_paths,
 )
 
-import pickle
-import numpy as np
 
+def set_seed(seed: int = RANDOM_SEED) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    tf.random.set_seed(seed)
 
-MODEL_DIR = Path("models")
-MODEL_PATH = MODEL_DIR/MODEL_NAME
-SCALER_PATH = MODEL_DIR/SCALER_NAME
-
-def save_scaler(scaler) ->None:
-    """ 
-    Save the fitted scaller to disk.
-    """
-    
-    MODEL_DIR.mkdir(exist_ok = True)
-    
-    with open(SCALER_PATH, "wb") as file:
-        pickle.dump(scaler, file)
-    
 
 def train_model(symbol: str):
-    """ 
-    Train an LSTM model for a stock.
-    """
+    """Train an LSTM for ONE stock and save its own model + scaler."""
     logger.info(f"Training model for {symbol}...")
-    
-    df = load_processed_data(symbol)
-    
-    df = select_features(df)
-    
-    print("=" * 50)
-    print(df.isnull().sum())
-    print("=" * 50)
+    set_seed()
 
-    print("Any NaN:", df.isnull().values.any())
-    print("Any Inf:", np.isinf(df.select_dtypes(include=[float, int])).values.any())
-        
-    scaled_data,scaler = scale_features(df)
-        
-    print("=" * 50)
-    print("Scaled Data Debug")
-    print("=" * 50)
+    model_path, scaler_path = get_paths(symbol)
 
-    print("Shape:", scaled_data.shape)
-    print("NaN Count:", np.isnan(scaled_data).sum())
-    print("Inf Count:", np.isinf(scaled_data).sum())
-    print("Min:", np.nanmin(scaled_data))
-    print("Max:", np.nanmax(scaled_data))
-        
-    X,y = create_sequences(scaled_data)
-    
-    print("=" * 50)
-    print("Sequence Debug")
-    print("=" * 50)
+    data = prepare_data(symbol)
+    X_train, y_train = data["X_train"], data["y_train"]
 
-    print("X NaN:", np.isnan(X).sum())
-    print("y NaN:", np.isnan(y).sum())
+    if np.isnan(X_train).any() or np.isnan(y_train).any():
+        raise ValueError(f"NaN values found in training data for {symbol}")
 
-    print("X Inf:", np.isinf(X).sum())
-    print("y Inf:", np.isinf(y).sum())
-    
-    X_train, X_test, y_train, y_test = split_train_test(X,y)
-    
-    model = build_lstm_model(input_shape=(X_train.shape[1],X_train.shape[2]))
-    
-    early_stopping = EarlyStopping(
-        monitor="val_loss",
-        patience=5,
-        restore_best_weights=True
-    )
-    
-    checkpoint = ModelCheckpoint(
-        filepath=MODEL_PATH,
-        monitor="val_loss",
-        save_best_only=True
-    )
-    
+    model = build_lstm_model(input_shape=(X_train.shape[1], X_train.shape[2]))
+
+    callbacks = [
+        EarlyStopping(
+            monitor="val_loss",
+            patience=EARLY_STOP_PATIENCE,
+            restore_best_weights=True,
+        ),
+        ModelCheckpoint(
+            filepath=str(model_path),
+            monitor="val_loss",
+            save_best_only=True,
+        ),
+    ]
+
     history = model.fit(
         X_train,
         y_train,
-        epochs = EPOCHS,
-        batch_size = BATCH_SIZE,
-        validation_split = VALIDATION_SPLIT,
-        verbose = 1,
-        callbacks = [
-            early_stopping,
-            checkpoint
-        ]
+        epochs=EPOCHS,
+        batch_size=BATCH_SIZE,
+        validation_split=VALIDATION_SPLIT,
+        shuffle=False,          # keep time order
+        verbose=1,
+        callbacks=callbacks,
     )
-    
-    logger.info(f"{symbol} model trained successfully.")
-    
-    save_scaler(scaler)
-    logger.info("Scaler saved successfully.")
-    
-    
-    
-    return {
-    "model": model,
-    "history": history,
-    "scaler": scaler,
-    "X_test": X_test,
-    "y_test": y_test,
-}
 
-# For Testing pupose Only
+    with open(scaler_path, "wb") as file:
+        pickle.dump(data["scaler"], file)
+
+    logger.info(f"{symbol} model and scaler saved to {model_path.parent}")
+
+    return {"model": model, "history": history, **data}
+
+
+# For training from the command line
 if __name__ == "__main__":
-
     for symbol in STOCKS:
         print(f"\nTraining {symbol}...")
         train_model(symbol)
-

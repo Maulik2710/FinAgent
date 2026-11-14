@@ -1,105 +1,107 @@
 import numpy as np
 import pandas as pd
 
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 
 from app.data_pipeline.config import PROCESSED_DATA_DIR
 from app.data_pipeline.logger import logger
 
-from app.forecasting.config import SEQUENCE_LENGTH , TRAIN_SPLIT , FEATURE_COLUMNS
+from app.forecasting.config import (
+    SEQUENCE_LENGTH,
+    TRAIN_SPLIT,
+    FEATURE_COLUMNS,
+    REQUIRED_RAW_COLUMNS,
+)
 
 
-def load_processed_data(symbol:str) -> pd.DataFrame:
-    """ 
-    Load Processed stock Data.
-    """
-    
+def load_processed_data(symbol: str) -> pd.DataFrame:
+    """Load processed stock data."""
     file_path = PROCESSED_DATA_DIR / f"{symbol}.csv"
-    
     logger.info(f"Loading processed data for {symbol}")
-    
     return pd.read_csv(file_path)
 
-def select_features(df: pd.DataFrame) ->pd.DataFrame:
-    """ 
-    Select Feature used for forecasting.
+
+def add_stationary_features(df: pd.DataFrame) -> pd.DataFrame:
     """
-    
-    return df[FEATURE_COLUMNS]
+    Build stationary features and the prediction target.
 
-def scale_features(df, scaler=None):
+    Target = today's log return in percent. The model predicts the return,
+    and the price is rebuilt as: previous_close * exp(return).
     """
-    Scale features using MinMaxScaler.
+    missing = [c for c in REQUIRED_RAW_COLUMNS if c not in df.columns]
+    if missing:
+        raise ValueError(f"Processed data is missing columns: {missing}")
 
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Feature dataframe.
+    df = df.copy()
 
-    scaler : MinMaxScaler | None
-        If None, fit a new scaler.
-        Otherwise use the provided fitted scaler.
+    df["Close_SMA_Ratio"] = df["Close"] / df["SMA_20"] - 1
+    df["Close_EMA_Ratio"] = df["Close"] / df["EMA_20"] - 1
+    df["MACD_Norm"] = df["MACD"] / df["Close"]
+    df["MACD_Signal_Norm"] = df["MACD_Signal"] / df["Close"]
 
-    Returns
-    -------
-    scaled_data
-    scaler
+    volume = df["Volume"].replace(0, np.nan)
+    df["Volume_Change"] = np.log(volume).diff()
+
+    df["Target"] = np.log(df["Close"] / df["Close"].shift(1)) * 100
+
+    needed = FEATURE_COLUMNS + ["Target", "Close"]
+    df = df.replace([np.inf, -np.inf], np.nan)
+    df = df.dropna(subset=needed).reset_index(drop=True)
+
+    return df
+
+
+def prepare_data(symbol: str, scaler=None):
     """
+    Full data preparation for one symbol.
+
+    - scaler is fit on TRAIN rows only (no leakage from the test period)
+    - if a fitted scaler is passed (inference), it is only used to transform
+    """
+    df = add_stationary_features(load_processed_data(symbol))
+
+    if len(df) < SEQUENCE_LENGTH + 50:
+        raise ValueError(f"Not enough data for {symbol}: {len(df)} rows")
+
+    features = df[FEATURE_COLUMNS].values
+    target = df["Target"].values
+    close = df["Close"].values
+
+    n_seq = len(df) - SEQUENCE_LENGTH
+    split = int(n_seq * TRAIN_SPLIT)
+    train_rows = split + SEQUENCE_LENGTH  # rows seen by training sequences
 
     if scaler is None:
-        scaler = MinMaxScaler()
-        scaled_data = scaler.fit_transform(df)
-    else:
-        scaled_data = scaler.transform(df)
+        scaler = StandardScaler().fit(features[:train_rows])
+    scaled = scaler.transform(features)
 
-    return scaled_data, scaler
+    X, y, prev_close, actual = [], [], [], []
+    for i in range(SEQUENCE_LENGTH, len(df)):
+        X.append(scaled[i - SEQUENCE_LENGTH:i])
+        y.append(target[i])
+        prev_close.append(close[i - 1])
+        actual.append(close[i])
 
-
-def create_sequences(scaled_data: np.ndarray,sequence_length: int = SEQUENCE_LENGTH):
-    """ 
-    Create input-output sequences for the LSTM model.
-    """
-    
-    X = []
-    y = []
-    
-    for i in range(sequence_length,len(scaled_data)):
-        
-        X.append(scaled_data[i-sequence_length:i])
-        
-        y.append(scaled_data[i,0])
-        
     X = np.array(X)
     y = np.array(y)
-    
-    return X,y
+    prev_close = np.array(prev_close)
+    actual = np.array(actual)
 
-def split_train_test(X: np.ndarray, y: np.ndarray,train_split: float = TRAIN_SPLIT):
-    """ 
-    Split the dataset into training and testing sets while preserving the chronological order.
-    """
-    
-    split_index = int(len(X) * train_split)
-    
-    X_train = X[:split_index]
-    X_test = X[split_index:]
-    
-    y_train = y[:split_index]
-    y_test = y[split_index:]
-    
-    return X_train,X_test,y_train,y_test
+    return {
+        "X_train": X[:split],
+        "y_train": y[:split],
+        "X_test": X[split:],
+        "y_test": y[split:],
+        "prev_close_test": prev_close[split:],
+        "actual_test": actual[split:],
+        "last_window": scaled[-SEQUENCE_LENGTH:],  # for the real next-day forecast
+        "last_close": float(close[-1]),
+        "scaler": scaler,
+    }
 
 
-# Just for Training Purpose
+# Just for testing
 if __name__ == "__main__":
-    df = load_processed_data("AAPL")
-    df = select_features(df)
-    scaled_data, scaler = scale_features(df)
-    X, y = create_sequences(scaled_data)
-    print(X.shape)
-    print(y.shape)
-    X_train, X_test, y_train, y_test = split_train_test(X, y)
-    print(X_train.shape)
-    print(X_test.shape)
-    print(y_train.shape)
-    print(y_test.shape)
+    data = prepare_data("AAPL")
+    for k in ["X_train", "y_train", "X_test", "y_test", "actual_test"]:
+        print(k, data[k].shape)
